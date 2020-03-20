@@ -44,7 +44,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	public void configure (HttpSecurity http) throws Exception {
 		
 		http
-			.authorizeRequests() 
+			.authorizeRequests()
 				.anyRequest().permitAll(); //とりあえず全部許可
 				
 		http.formLogin() // ログインに関する設定

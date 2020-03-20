@@ -75,78 +75,33 @@
 								</div>
 							</th>
 						</tr>
-						<tr>
+						<tr th:each="orderItem : ${order.orderItemList}">
 							<td>
 								<div class="center">
-									<img src="../static/img_pizza/1.jpg"
+									<img src="../static/img_pizza/1.jpg" th:src="@{'/img/' + ${orderItem.item.imagePath}}"
 										class="img-responsive img-rounded" width="100" height="300"><br>
-									じゃがバターベーコン
+									<span th:text="${orderItem.item.name}">じゃがバターベーコン</span>
 								</div>
 							</td>
 							<td>
-								<span class="price">&nbsp;Ｌ</span>&nbsp;&nbsp;2,380円
-								&nbsp;&nbsp;1個
+								<span class="price" th:text="'&nbsp;&nbsp;'+${orderItem.size}+'&nbsp;&nbsp;'">&nbsp;Ｌ</span>&nbsp;&nbsp;
+								<span th:if="${orderItem.size} == 'M'" th:text="${#numbers.formatInteger(orderItem.item.priceM,1,'COMMA') + '円(税抜)'}"></span>
+								<span th:if="${orderItem.size} == 'L'" th:text="${#numbers.formatInteger(orderItem.item.priceL,1,'COMMA') + '円(税抜)'}">2,380円</span>&nbsp;&nbsp;
+								<span th:text="${orderItem.quantity}">1</span>個
 							</td>
 							<td>
-								<ul>
-									<li>ピーマン300円</li>
+								<ul th:each="orderTopping : ${orderItem.orderToppingList}">
+									<li th:if="${orderItem.size} == 'M'" th:text="${orderTopping.topping.name} + ' ' + ${orderTopping.topping.priceM} + '円'"></li>
+									<li th:if="${orderItem.size} == 'L'" th:text="${orderTopping.topping.name} + ' ' + ${orderTopping.topping.priceL} + '円'"></li>
+									<!-- <li>ピーマン300円</li>
 									<li>オニオン300円</li>
-									<li>あらびきソーセージ300円</li>
+									<li>あらびきソーセージ300円</li> -->
 								</ul>
+								<div class="text-center" th:unless="${orderItem.orderToppingList.size()>0}" th:text="なし"></div>
 							</td>
 							<td>
 								<div class="text-center">
-									3,280円
-								</div>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<div class="center">
-									<img src="../static/img_pizza/1.jpg"
-										class="img-responsive img-rounded" width="100" height="300"><br>
-									じゃがバターベーコン
-								</div>
-							</td>
-							<td>
-								<span class="price">&nbsp;Ｌ</span>&nbsp;&nbsp;2,380円
-								&nbsp;&nbsp;1個
-							</td>
-							<td>
-								<ul>
-									<li>ピーマン300円</li>
-									<li>オニオン300円</li>
-									<li>あらびきソーセージ300円</li>
-								</ul>
-							</td>
-							<td>
-								<div class="text-center">
-									3,280円
-								</div>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<div class="center">
-									<img src="../static/img_pizza/1.jpg"
-										class="img-responsive img-rounded" width="100" height="300"><br>
-									じゃがバターベーコン
-								</div>
-							</td>
-							<td>
-								<span class="price">&nbsp;Ｌ</span>&nbsp;&nbsp;2,380円
-								&nbsp;&nbsp;1個
-							</td>
-							<td>
-								<ul>
-									<li>ピーマン300円</li>
-									<li>オニオン300円</li>
-									<li>あらびきソーセージ300円</li>
-								</ul>
-							</td>
-							<td>
-								<div class="text-center">
-									3,280円
+									<span th:text="${#numbers.formatInteger(orderItem.subTotal,1,'COMMA') + '円'}">◯,◯◯◯円</span>
 								</div>
 							</td>
 						</tr>
@@ -158,14 +113,18 @@
 		<div class="row">
 			<div class="col-xs-offset-2 col-xs-8">
 				<div class="form-group text-center">
-					<span id="total-price">消費税：8,000円</span><br>
-					<span id="total-price">ご注文金額合計：38,000円 (税込)</span>
+					<span id="total-price" th:text="'消費税：' + ${#numbers.formatInteger(order.tax,1,'COMMA') + '円 (税抜)'}">消費税：8,000円（税込）</span><br>
+					<span id="total-price" th:text="'ご注文金額合計：' + ${#numbers.formatInteger(order.totalPrice,1,'COMMA') + '円 (税込)'}">ご注文金額合計：38,000円 (税込)</span>
 				</div>
 			</div>
 		</div>
 
 		<!-- table -->
-		<form action="order_finished.html">
+		<form action="order_finished.html" th:action="@{/order/do_order}" method="post">
+			<!-- orderのidをhiddenで埋めておく -->
+			<input type="hidden" name="id" th:value="${order.id}">
+			<!-- 合計金額をhiddenで埋めておく -->
+			<input type="hidden" name="totalPrice" th:value="${order.totalPrice}">
 			<div class="row">
 				<div
 					class="table-responsive col-lg-offset-3 col-lg-6 col-md-offset-1 col-md-10 col-sm-10 col-xs-12">
@@ -236,7 +195,7 @@
 													class="control-label" style="color: red" for="inputPeriod">配達日時を入力してください</label>
 											</div>
 											<div class="col-sm-5">
-												<input type="date" name="name" id="name"
+												<input type="date" name="stringDeliveryDate" id="name"
 													class="form-control input-sm" />
 											</div>
 
@@ -245,47 +204,47 @@
 											<div class="col-sm-12">
 												<label class="radio-inline">
 													<input type="radio"
-														name="responsibleCompany" checked="checked">
+														name="stringDeliveryHour" checked="checked">
 													10時
 												</label>
 												<label class="radio-inline">
 													<input type="radio"
-														name="responsibleCompany">
+														name="stringDeliveryHour">
 													11時
 												</label>
 												<label class="radio-inline">
 													<input type="radio"
-														name="responsibleCompany">
+														name="stringDeliveryHour">
 													12時
 												</label><br>
 												<label class="radio-inline">
 													<input type="radio"
-														name="responsibleCompany">
+														name="stringDeliveryHour">
 													13時
 												</label>
 												<label class="radio-inline">
 													<input type="radio"
-														name="responsibleCompany">
+														name="stringDeliveryHour">
 													14時
 												</label>
 												<label class="radio-inline">
 													<input type="radio"
-														name="responsibleCompany">
+														name="stringDeliveryHour">
 													15時
 												</label><br>
 												<label class="radio-inline">
 													<input type="radio"
-														name="responsibleCompany">
+														name="stringDeliveryHour">
 													16時
 												</label>
 												<label class="radio-inline">
 													<input type="radio"
-														name="responsibleCompany">
+														name="stringDeliveryHour">
 													17時
 												</label>
 												<label class="radio-inline">
 													<input type="radio"
-														name="responsibleCompany">
+														name="stringDeliveryHour">
 													18時
 												</label><br>
 											</div>
@@ -316,7 +275,7 @@
 										<div class="col-sm-12">
 											<label class="radio-inline">
 												<input type="radio"
-													name="responsibleCompany" checked="checked">
+													 checked="checked">
 												代金引換
 											</label>
 										</div>
@@ -329,12 +288,12 @@
 										クレジットカード決済
 									</div>
 								</td>
-								<td align="center">
+								<td>
 									<div class="row">
 										<div class="col-sm-12">
 											<label class="radio-inline">
 												<input type="radio"
-													name="responsibleCompany" checked="checked">
+													>
 												クレジットカード
 											</label><br><br>
 										</div>
