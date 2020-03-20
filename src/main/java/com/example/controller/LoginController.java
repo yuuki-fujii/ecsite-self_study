@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.domain.LoginUser;
 import com.example.domain.User;
+import com.example.service.AddToCartService;
 
 
 
@@ -21,6 +22,9 @@ public class LoginController {
 	
 	@Autowired
 	private HttpSession session;
+	
+	@Autowired
+	private AddToCartService addToCartService;
 	
 	/**
 	 * ログインページを表示する.
@@ -50,7 +54,12 @@ public class LoginController {
 	public String afterLogin(@AuthenticationPrincipal LoginUser loginUser, Model model) {
 		
 		User user = loginUser.getUser();
+		// 利用者がログインしているかどうか判定するための記述
 		session.setAttribute("user", user);
+		session.setAttribute("userId", user.getId());
+		
+		// ログイン前のカートの中身をログイン後のカートに反映する
+		addToCartService.addToCartAfterLogin();
 		
 		// 通常は商品一覧画面に遷移する.
 		return "forward:/";
