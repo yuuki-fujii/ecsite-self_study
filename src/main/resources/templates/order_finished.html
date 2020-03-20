@@ -37,7 +37,7 @@
 						<a href="cart_list.html" class="navbar-link" th:href="@{/show_cart_list}">ショッピングカート</a>&nbsp;&nbsp;
 						<a href="order_history.html" class="navbar-link">注文履歴</a>&nbsp;&nbsp;
 						<a href="login.html" th:href="@{/login}" class="navbar-link" th:unless="${session.user}">ログイン</a>&nbsp;&nbsp;
-						<a href="item_list.html" th:href="@{/login/logout}" class="navbar-link" th:if="${session.user}">ログアウト</a>
+						<a href="item_list.html" th:href="@{/logout}" class="navbar-link" th:if="${session.user}">ログアウト</a>
 					</p>
 				</div>
 				<!-- /.navbar-collapse -->
