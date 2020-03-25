@@ -49,7 +49,7 @@
 		<!-- table -->
 		<div class="row">
 			<div
-				class="table-responsive col-lg-offset-1 col-lg-10 col-md-offset-1 col-md-10 col-sm-10 col-xs-12">
+				class="table-responsive col-lg-offset-1 col-lg-10 col-md-offset-1 col-md-10 col-sm-10 col-xs-12" th:if="${order}">
 				<h3 class="text-center">注文内容確認</h3>
 				<table class="table table-striped">
 					<tbody>
@@ -120,7 +120,7 @@
 		</div>
 
 		<!-- table -->
-		<form action="order_finished.html" th:action="@{/order/do_order}" method="post">
+		<form action="order_finished.html" th:action="@{/order/do_order}" method="post" th:object="${orderForm}">
 			<!-- orderのidをhiddenで埋めておく -->
 			<input type="hidden" name="id" th:value="${order.id}">
 			<!-- 合計金額をhiddenで埋めておく -->
@@ -138,7 +138,8 @@
 									</div>
 								</td>
 								<td>
-									<input type="text">
+									<input type="text" name="destinationName" th:field="*{destinationName}">
+									<span style="color: red" th:errors="*{destinationName}"></span>
 								</td>
 							</tr>
 							<tr>
@@ -148,7 +149,8 @@
 									</div>
 								</td>
 								<td>
-									<input type="text">
+									<input type="text" name="destinationEmail" th:field="*{destinationEmail}">
+									<span style="color: red" th:errors="*{destinationEmail}"></span>
 								</td>
 							</tr>
 							<tr>
@@ -158,7 +160,8 @@
 									</div>
 								</td>
 								<td>
-									<input type="text">&nbsp;&nbsp;<button>住所検索</button>
+									<input type="text" name="destinationZipcode" th:field="*{destinationZipcode}">&nbsp;&nbsp;<button type="button" id="search_address2">住所検索</button>
+									<div style="color: red" th:errors="*{destinationZipcode}"></div>
 								</td>
 							</tr>
 							<tr>
@@ -168,7 +171,8 @@
 									</div>
 								</td>
 								<td>
-									<input type="text">
+									<input type="text" name="destinationAddress" th:field="*{destinationAddress}">
+									<span style="color: red" th:errors="*{destinationAddress}"></span>
 								</td>
 							</tr>
 							<tr>
@@ -178,7 +182,8 @@
 									</div>
 								</td>
 								<td>
-									<input type="text">
+									<input type="text" name="destinationTel" th:field="*{destinationTel}">
+									<span style="color: red" th:errors="*{destinationTel}"></span>
 								</td>
 							</tr>
 							<tr>
@@ -192,7 +197,7 @@
 										<div class="row">
 											<div class="col-sm-12">
 												<label
-													class="control-label" style="color: red" for="inputPeriod">配達日時を入力してください</label>
+													class="control-label" style="color: red" for="inputPeriod" th:errors="*{stringDeliveryDate}">配達日時を入力してください</label>
 											</div>
 											<div class="col-sm-5">
 												<input type="date" name="stringDeliveryDate" id="name"
@@ -204,47 +209,47 @@
 											<div class="col-sm-12">
 												<label class="radio-inline">
 													<input type="radio"
-														name="stringDeliveryHour" checked="checked">
+														name="stringDeliveryHour" value="10" checked="checked" th:field="*{stringDeliveryHour}">
 													10時
 												</label>
 												<label class="radio-inline">
 													<input type="radio"
-														name="stringDeliveryHour">
+														name="stringDeliveryHour" value="11" th:field="*{stringDeliveryHour}">
 													11時
 												</label>
 												<label class="radio-inline">
 													<input type="radio"
-														name="stringDeliveryHour">
+														name="stringDeliveryHour" value="12" th:field="*{stringDeliveryHour}">
 													12時
 												</label><br>
 												<label class="radio-inline">
 													<input type="radio"
-														name="stringDeliveryHour">
+														name="stringDeliveryHour" value="13" th:field="*{stringDeliveryHour}">
 													13時
 												</label>
 												<label class="radio-inline">
 													<input type="radio"
-														name="stringDeliveryHour">
+														name="stringDeliveryHour" value="14" th:field="*{stringDeliveryHour}">
 													14時
 												</label>
 												<label class="radio-inline">
 													<input type="radio"
-														name="stringDeliveryHour">
+														name="stringDeliveryHour" value="15" th:field="*{stringDeliveryHour}">
 													15時
 												</label><br>
 												<label class="radio-inline">
 													<input type="radio"
-														name="stringDeliveryHour">
+														name="stringDeliveryHour" value="16" th:field="*{stringDeliveryHour}">
 													16時
 												</label>
 												<label class="radio-inline">
 													<input type="radio"
-														name="stringDeliveryHour">
+														name="stringDeliveryHour" value="17" th:field="*{stringDeliveryHour}">
 													17時
 												</label>
 												<label class="radio-inline">
 													<input type="radio"
-														name="stringDeliveryHour">
+														name="stringDeliveryHour" value="18" th:field="*{stringDeliveryHour}">
 													18時
 												</label><br>
 											</div>
@@ -274,7 +279,7 @@
 									<div class="row">
 										<div class="col-sm-12">
 											<label class="radio-inline">
-												<input type="radio"
+												<input type="radio" name="paymentMethod" value="1" th:field="*{paymentMethod}"
 													 checked="checked">
 												代金引換
 											</label>
@@ -292,8 +297,7 @@
 									<div class="row">
 										<div class="col-sm-12">
 											<label class="radio-inline">
-												<input type="radio"
-													>
+												<input type="radio" name="paymentMethod" value="2" th:field="*{paymentMethod}">
 												クレジットカード
 											</label><br><br>
 										</div>
@@ -317,5 +321,7 @@
 	<script
 		src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 	<script src="../static/js/bootstrap.min.js" th:src="@{/js/bootstrap.min.js}"></script>
+	<script src="https://ajaxzip3.github.io/ajaxzip3.js" charset="UTF-8"></script>
+	<script th:src="@{/js/get_address.js}" src="../static/js/get_address.js"></script>
 </body>
 </html>

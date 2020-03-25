@@ -1,6 +1,6 @@
 package com.example.form;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -40,7 +40,7 @@ public class OrderForm {
 	/** 配達時間 */
 	private String stringDeliveryHour;
 	/** 配達時間 */ 
-	private Timestamp deliveryTime;
+	private LocalDateTime deliveryTime;
 	/** 支払方法 */
 	private Integer paymentMethod;
 	public Integer getId() {
@@ -97,10 +97,22 @@ public class OrderForm {
 	public void setStringDeliveryHour(String stringDeliveryHour) {
 		this.stringDeliveryHour = stringDeliveryHour;
 	}
-	public Timestamp getDeliveryTime() {
-		return deliveryTime;
+	
+	public LocalDateTime getDeliveryTime() {
+		try {
+			// stringDeliveryDate と stringDeliveryHourを用いてLocalDateTimeオブジェクトを作成する
+			int year = Integer.parseInt(stringDeliveryDate.substring(0, 4));
+			int month = Integer.parseInt(stringDeliveryDate.substring(5, 7));
+			int date = Integer.parseInt(stringDeliveryDate.substring(8, 10));
+			int hour = Integer.parseInt(stringDeliveryHour);
+			LocalDateTime deliveryTime = LocalDateTime.of(year, month, date, hour, 0, 0);
+			
+			return deliveryTime;
+		} catch (Exception e) {
+			return null;
+		}
 	}
-	public void setDeliveryTime(Timestamp deliveryTime) {
+	public void setDeliveryTime(LocalDateTime deliveryTime) {
 		this.deliveryTime = deliveryTime;
 	}
 	public Integer getPaymentMethod() {

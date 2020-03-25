@@ -197,6 +197,23 @@ public class OrderRepository {
 		return order;
 	}
 	
+	
+	/**
+	 * Orderオブジェクトを更新.
+	 * 
+	 * @param order orderオブジェクト
+	 */
+	public void updateOrder(Order order) {
+		SqlParameterSource param = new BeanPropertySqlParameterSource(order);
+		
+		String sql = "UPDATE orders SET status=:status, total_price=:totalPrice, order_date=:orderDate, "
+					+ "destination_name=:destinationName, destination_email=:destinationEmail, destination_zipcode=:destinationZipcode, "
+					+ "destination_address=:destinationAddress, destination_tel=:destinationTel,  delivery_time=:deliveryTime, payment_method=:paymentMethod "
+					+ "WHERE status = 0 AND user_id = :userId ";
+		template.update(sql, param);
+	}
+	
+	
 	/**
 	 * Orderテーブルのuser_idをログインユーザのものに更新する
 	 * 

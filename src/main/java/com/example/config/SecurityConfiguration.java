@@ -45,6 +45,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		
 		http
 			.authorizeRequests()
+				.antMatchers("/order**").authenticated()
 				.anyRequest().permitAll(); //とりあえず全部許可
 				
 		http.formLogin() // ログインに関する設定

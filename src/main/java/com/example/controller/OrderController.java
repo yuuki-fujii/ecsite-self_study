@@ -1,17 +1,28 @@
 package com.example.controller;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.example.domain.LoginUser;
 import com.example.domain.Order;
+import com.example.domain.User;
 import com.example.form.OrderForm;
+import com.example.service.OrderService;
 import com.example.service.ShowCartListService;
 
 /**
@@ -28,11 +39,27 @@ public class OrderController {
 	private HttpSession session;
 	
 	@Autowired
+	private OrderService orderService;
+	
+	@Autowired
 	private ShowCartListService showCartListService;
 	
 	@ModelAttribute
-	public OrderForm setUpOrderForm() {
-		return new OrderForm();
+	public OrderForm setUpOrderForm(@AuthenticationPrincipal LoginUser loginUser) {
+		OrderForm form = new OrderForm();
+		if (loginUser ==null) {
+			return form;
+		}
+		
+		User user = loginUser.getUser();
+		form.setDestinationName(user.getName());
+		form.setDestinationEmail(user.getEmail());
+		form.setDestinationZipcode(user.getZipcode());
+		form.setDestinationAddress(user.getAddress());
+		form.setDestinationTel(user.getTelephone());
+		form.setStringDeliveryHour("10");
+		form.setPaymentMethod(1);
+		return form;
 	}
 	
 	/**
@@ -46,7 +73,7 @@ public class OrderController {
 		Integer userId = (Integer) session.getAttribute("userId");
 		// ログインしていない場合、ログインを要求する.
 		if (userId == null) {
-			return "forward:/login";
+			return "forward:/login/referer";
 		}
 		
 		List <Order> orderList = showCartListService.showCartList(userId);
@@ -66,8 +93,43 @@ public class OrderController {
 	
 	
 	@RequestMapping("/do_order")
-	public String doOrder() {
+	public String doOrder(@Validated OrderForm form, BindingResult result, Model model) {
+		// 入力段階でエラーがある場合、注文確認画面を返す
+		if (result.hasErrors()) {
+			return toOrderConfirm(model);
+		}
 		
+		// 配達希望時刻を取得
+		LocalDateTime localDeliveryTime = form.getDeliveryTime();
+		//　現在時刻を取得
+		LocalDateTime nowPlus2hour = LocalDateTime.now().plusHours(2);
+		//　もし過去の時刻が選択されたらエラーを返す
+		if (nowPlus2hour.isAfter(localDeliveryTime)) {
+			result.rejectValue("stringDeliveryDate",  null, "配達希望日時は現在時刻の2時間以上後を選択して下さい");
+		}
+		
+		// TimestampクラスのvalueOfメソッドを使って変換しておく
+		Timestamp deliveryTime = Timestamp.valueOf(localDeliveryTime);
+		
+		// ユーザIDを元に注文前Orderを検索
+		Integer userId = (Integer) session.getAttribute("userId");
+		List <Order> orderList = showCartListService.showCartList(userId);
+		Order order = orderList.get(0);
+		
+		// formの中身をorderドメインにコピー
+		BeanUtils.copyProperties(form, order);
+		// deliveryTimeは手動でセットする
+		order.setDeliveryTime(deliveryTime);
+		// 注文日も手動でセットする
+		LocalDate now = LocalDate.now();
+		Date orderDate = java.sql.Date.valueOf(now);	
+		order.setOrderDate(orderDate);
+		// 支払い状況に応じてstatusの値を更新する
+		order.setStatus(form.getPaymentMethod());
+		
+		System.out.println(order);
+		orderService.updateOrder(order);
+
 		return "redirect:/order/to_finished";
 	}
 	
