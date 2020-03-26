@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.domain.LoginUser;
-import com.example.domain.User;
 import com.example.service.AddToCartService;
 
 
@@ -65,21 +64,16 @@ public class LoginController {
 	 * @return 商品一覧画面（「注文へ進む」ボタンから当パスに遷移してきた場合は、return:注文確認画面）
 	 */
 	@RequestMapping("/after_login")
-	public String afterLogin(@AuthenticationPrincipal LoginUser loginUser, Model model) {
-		
-		User user = loginUser.getUser();
-		// 利用者がログインしているかどうか判定するための記述
-		session.setAttribute("user", user);
-		session.setAttribute("userId", user.getId());
-		
+	public String afterLogin(@AuthenticationPrincipal LoginUser loginUser,Model model) {
+				
 		// ログイン前のカートの中身をログイン後のカートに反映する
-		addToCartService.addToCartAfterLogin();
+		addToCartService.addToCartAfterLogin(loginUser);
 		
 		// ログイン成功後、リファラ情報を取り出す
 		String url = (String) session.getAttribute("referer");
 		// 「注文へ進む」ボタンからのリクエストがきた場合のみ、ログイン後に注文確認画面へ遷移する.
 		if ("http://localhost:8080/show_cart_list".equals(url)) {
-			return "forward:/confirm";
+			return "forward:/order/to_confirm";
 		}
 		// 通常は商品一覧画面に遷移する.
 		return "forward:/";

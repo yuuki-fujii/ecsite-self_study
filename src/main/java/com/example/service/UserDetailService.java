@@ -1,6 +1,11 @@
 package com.example.service;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,12 +25,15 @@ public class UserDetailService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 		
-		try {
-			User user = userRepository.findByEmail(email);
-			return new LoginUser(user);
-		} catch (Exception e) {
-			throw new UsernameNotFoundException("not found : " + email);	
-		}
+		User user = userRepository.findByEmail(email);
 		
+		if (user == null) {
+			throw new UsernameNotFoundException("not found : " + email);
+		}
+		// 権限付与
+		Collection<GrantedAuthority> authorityList = new ArrayList<>();
+		authorityList.add(new SimpleGrantedAuthority("ROLE_USER"));
+		
+		return new LoginUser(user, authorityList);
 	}
 }

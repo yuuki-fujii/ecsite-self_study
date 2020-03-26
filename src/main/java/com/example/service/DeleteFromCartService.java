@@ -5,9 +5,11 @@ import java.util.List;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.domain.LoginUser;
 import com.example.domain.Order;
 import com.example.repository.OrderItemRepository;
 import com.example.repository.OrderRepository;
@@ -36,12 +38,13 @@ public class DeleteFromCartService {
 	 * 
 	 * @param orderItemId 主キー
 	 */
-	public void cartDelete(Integer orderItemId) {
-		// 削除前に判定
-		Integer userId = (Integer) session.getAttribute("userId");
+	public void cartDelete(@AuthenticationPrincipal LoginUser loginUser,Integer orderItemId) {
+		Integer userId = null;
 		// 非ログインユーザーがカートを表示する際の処理
-		if (userId == null) {
+		if (loginUser == null) {
 			userId = session.getId().hashCode();
+		} else {
+			userId = loginUser.getUser().getId();
 		}
 		
 		List<Order> orderList = orderRepository.findByUserIdAndStatus(userId, 0);

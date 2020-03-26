@@ -6,10 +6,12 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.domain.Item;
+import com.example.domain.LoginUser;
 import com.example.domain.Order;
 import com.example.domain.OrderItem;
 import com.example.domain.OrderTopping;
@@ -49,14 +51,14 @@ public class AddToCartService {
 	 * 
 	 * @param form ショッピングカート用フォーム
 	 */
-	public void addToCart(AddToCartForm form) {
+	public void addToCart(@AuthenticationPrincipal LoginUser loginUser,AddToCartForm form) {
 		
-		// userIdを取得
-		Integer userId = (Integer) session.getAttribute("userId");
-		
+		Integer userId = null;
 		// 非ログインユーザーがカートを表示する際の処理
-		if (userId == null) {
+		if (loginUser == null) {
 			userId = session.getId().hashCode();
+		} else {
+			userId = loginUser.getUser().getId();
 		}
 		
 		// userIdで注文前のorderを検索
@@ -113,7 +115,7 @@ public class AddToCartService {
 	/**
 	 * ログイン前にカートに追加した内容をログイン後のカートに反映させる.
 	 */
-	public void addToCartAfterLogin() {
+	public void addToCartAfterLogin(@AuthenticationPrincipal LoginUser loginUser) {
 		
 		// ログイン前のカートに中身がなければ何もせずreturn 
 		List <Order> beforeLoginOrderList = orderRepository.findByUserIdAndStatus(session.getId().hashCode(), 0);
@@ -123,7 +125,7 @@ public class AddToCartService {
 		}
 		
 		// useIdを取得
-		Integer userId = (Integer) session.getAttribute("userId");
+		Integer userId = loginUser.getUser().getId();
 		
 		// ログイン後のカートを検索
 		List <Order> afterLoginOrderList = orderRepository.findByUserIdAndStatus(userId, 0);

@@ -1,6 +1,8 @@
 package com.example.domain;
 
-import org.springframework.security.core.authority.AuthorityUtils;
+import java.util.Collection;
+
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
 /**
@@ -22,10 +24,10 @@ public class LoginUser extends User {
 	 * 
 	 * @param user 
 	 */
-	public LoginUser(com.example.domain.User user) {
+	public LoginUser(com.example.domain.User user, Collection<GrantedAuthority> authorityList) {
 		// スーパークラスのユーザーID、パスワードに値をセットする
 		// 実際の認証はスーパークラスのユーザーID、パスワードで行われる
-		super(user.getEmail(), user.getPassword(), AuthorityUtils.createAuthorityList("ROLE_USER"));
+		super(user.getEmail(), user.getPassword(), authorityList);
 		this.user = user;
 	}
 	

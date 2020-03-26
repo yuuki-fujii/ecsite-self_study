@@ -6,8 +6,6 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
-import javax.servlet.http.HttpSession;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -34,10 +32,7 @@ import com.example.service.ShowCartListService;
 @Controller
 @RequestMapping("/order")
 public class OrderController {	
-	
-	@Autowired
-	private HttpSession session;
-	
+		
 	@Autowired
 	private OrderService orderService;
 	
@@ -68,12 +63,14 @@ public class OrderController {
 	 * @return 注文確認画面
 	 */
 	@RequestMapping("/to_confirm")
-	public String toOrderConfirm(Model model) {
+	public String toOrderConfirm(@AuthenticationPrincipal LoginUser loginUser, Model model) {
 		
-		Integer userId = (Integer) session.getAttribute("userId");
-		// ログインしていない場合、ログインを要求する.
-		if (userId == null) {
+		Integer userId = null;
+		// 非ログインユーザーの場合、ログイン画面を要求
+		if (loginUser == null) {
 			return "forward:/login/referer";
+		} else {
+			userId = loginUser.getUser().getId();
 		}
 		
 		List <Order> orderList = showCartListService.showCartList(userId);
@@ -93,10 +90,10 @@ public class OrderController {
 	
 	
 	@RequestMapping("/do_order")
-	public String doOrder(@Validated OrderForm form, BindingResult result, Model model) {
+	public String doOrder(@AuthenticationPrincipal LoginUser loginUser,@Validated OrderForm form, BindingResult result, Model model) {
 		// 入力段階でエラーがある場合、注文確認画面を返す
 		if (result.hasErrors()) {
-			return toOrderConfirm(model);
+			return toOrderConfirm(loginUser,model);
 		}
 		
 		// 配達希望時刻を取得
@@ -112,7 +109,7 @@ public class OrderController {
 		Timestamp deliveryTime = Timestamp.valueOf(localDeliveryTime);
 		
 		// ユーザIDを元に注文前Orderを検索
-		Integer userId = (Integer) session.getAttribute("userId");
+		Integer userId = loginUser.getUser().getId();
 		List <Order> orderList = showCartListService.showCartList(userId);
 		Order order = orderList.get(0);
 		
@@ -127,7 +124,6 @@ public class OrderController {
 		// 支払い状況に応じてstatusの値を更新する
 		order.setStatus(form.getPaymentMethod());
 		
-		System.out.println(order);
 		orderService.updateOrder(order);
 
 		return "redirect:/order/to_finished";

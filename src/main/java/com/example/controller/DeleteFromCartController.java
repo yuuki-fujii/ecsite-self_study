@@ -1,9 +1,11 @@
 package com.example.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.example.domain.LoginUser;
 import com.example.service.DeleteFromCartService;
 
 /**
@@ -26,8 +28,8 @@ public class DeleteFromCartController {
 	 * @return カート内一覧画面
 	 */
 	@RequestMapping("")
-	public String cartDelete(Integer orderItemId) {
-		deleteFromCartService.cartDelete(orderItemId);
+	public String cartDelete(@AuthenticationPrincipal LoginUser loginUser,Integer orderItemId) {
+		deleteFromCartService.cartDelete(loginUser,orderItemId);
 		return "redirect:/show_cart_list";
 	}
 }
