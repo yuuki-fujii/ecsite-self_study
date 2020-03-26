@@ -45,8 +45,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		
 		http
 			.authorizeRequests()
-				.antMatchers("/order**").authenticated()
-				.anyRequest().permitAll(); //とりあえず全部許可
+				.antMatchers("/order/do_order").hasRole("USER") // USER権限のみアクセス可能
+				.anyRequest().permitAll(); // 誰でもアクセスできる
 				
 		http.formLogin() // ログインに関する設定
 			.loginPage("/login") 
@@ -59,7 +59,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.logout() // ログアウトに関する処理
 			.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
 			.logoutSuccessUrl("/")
-			.invalidateHttpSession(true).permitAll();
+			.deleteCookies("JSESSIONID")
+			.invalidateHttpSession(true);
 		
 		//　デフォルトの設定ではログイン前後でセッションIDが変わってしまうので、それを無効にする
 		http.sessionManagement().sessionFixation().none();
