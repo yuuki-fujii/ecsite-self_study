@@ -22,6 +22,11 @@ public class User {
 	private String address;
 	/** 電話番号 */
 	private String telephone;
+	/** 管理者権限 */
+	/** trueなら管理者権限あり、falseなら権限なし */
+	private Boolean isAdmin;
+
+
 
 	@Override
 	public String toString() {
@@ -83,5 +88,12 @@ public class User {
 
 	public void setTelephone(String telephone) {
 		this.telephone = telephone;
+	}
+	
+	public Boolean getIsAdmin() {
+		return isAdmin;
+	}
+	public void setIsAdmin(Boolean isAdmin) {
+		this.isAdmin = isAdmin;
 	}
 }
