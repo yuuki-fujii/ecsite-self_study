@@ -52,6 +52,15 @@ public class ItemRepository {
 	}
 	
 	
+	public List <Item> findByLikeName(String name){
+		StringBuilder sql = new StringBuilder();
+		sql.append("");
+		
+		return null;
+	}
+	
+	
+	
 	/**
 	 * 引数の商品IDで商品情報を検索します.
 	 * 
