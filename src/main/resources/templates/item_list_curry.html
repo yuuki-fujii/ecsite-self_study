@@ -98,6 +98,11 @@ $( function() {
 					</form>
 				</div>
 			</div>
+			<h4>最近チェックした商品</h4><br>
+			<span th:each="itemHistory :${itemHistroyList}">
+				<span th:text="${itemHistory }"></span><br>
+			</span>
+			
 		</div>
 		
 			

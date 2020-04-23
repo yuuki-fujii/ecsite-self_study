@@ -59,7 +59,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.logout() // ログアウトに関する処理
 			.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
 			.logoutSuccessUrl("/")
-			.deleteCookies("JSESSIONID")
+//			.deleteCookies("JSESSIONID")
 			.invalidateHttpSession(true);
 		
 		//　デフォルトの設定ではログイン前後でセッションIDが変わってしまうので、それを無効にする

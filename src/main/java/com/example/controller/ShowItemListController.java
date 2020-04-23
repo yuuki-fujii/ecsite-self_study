@@ -1,7 +1,12 @@
 package com.example.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -34,10 +39,42 @@ public class ShowItemListController {
 	// 1ページに表示する商品は6品
 	private static final int VIEW_SIZE = 6;
 	
-	// とりあえず商品表示まで
 	@RequestMapping("")
-	public String showList(SearchForm form ,Model model) {
+	public String showList(SearchForm form ,Model model,HttpServletRequest request) {
+		
+		// クッキーを取得
+		Cookie[] cookies = request.getCookies();
+		String itemName = "";
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				if (cookie.getName().equals("item")) {
+					itemName = cookie.getValue();
+				} 
+			}
+		}
+		
+		String [] itemHistory = itemName.split("/");
+		System.out.println(itemHistory.length);
+		if (itemHistory != null) {
+			List <String> itemHistroyArrayList = new ArrayList<>(Arrays.asList(itemHistory)); // 素材
+			Collections.reverse(itemHistroyArrayList);
 			
+			List <String> itemHistroyList = null;
+			if (itemHistroyArrayList.size() >= 6) {
+				itemHistroyList = new ArrayList<>();
+				for (int i = 0; i <= 4 ;i++) {
+					String item = itemHistroyArrayList.get(i);
+					itemHistroyList.add(item);
+				}
+			} else {
+				itemHistroyList = itemHistroyArrayList;
+			}
+			model.addAttribute("itemHistroyList", itemHistroyList);
+		}
+		
+
+		
+		
 		// オートコンプリート用の記述
 		List<Item> fullItemList = showItemListService.getAllItems();
 		StringBuilder itemListForAutocomplete = getItemListForAutocomplete(fullItemList);
