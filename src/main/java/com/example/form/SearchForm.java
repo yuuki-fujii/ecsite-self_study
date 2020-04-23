@@ -12,6 +12,8 @@ public class SearchForm {
 	private String name;
 	/** ページ数 */
 	private Integer page;
+	/** ソート順 */
+	private String sort;
 	
 	public String getName() {
 		return name;
@@ -25,8 +27,14 @@ public class SearchForm {
 	public void setPage(Integer page) {
 		this.page = page;
 	}
+	public String getSort() {
+		return sort;
+	}
+	public void setSort(String sort) {
+		this.sort = sort;
+	}
 	@Override
 	public String toString() {
-		return "SearchForm [name=" + name + ", page=" + page + "]";
+		return "SearchForm [name=" + name + ", page=" + page + ", sort=" + sort + "]";
 	}
 }

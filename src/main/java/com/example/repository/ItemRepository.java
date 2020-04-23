@@ -98,9 +98,15 @@ public class ItemRepository {
 		
 		if (!"count".equals(mode)) {
 			Integer startNumber = calcStartNumber(form);
-			sql.append("ORDER BY price_m, id LIMIT 6 OFFSET " + startNumber);
+			if ("0".equals(form.getSort())) {
+				sql.append(" ORDER BY id ");
+			} else if ("1".equals(form.getSort())) {
+				sql.append(" ORDER BY price_m, id ");
+			} else if ("2".equals(form.getSort())) {
+				sql.append(" ORDER BY price_m DESC, id ");
+			}
+			sql.append("LIMIT 6 OFFSET " + startNumber);
 		}
-		
 		return sql;
 	}
 	

@@ -51,8 +51,6 @@ $( function() {
 						<a href="order_history.html" class="navbar-link">注文履歴</a>&nbsp;&nbsp;
 						<a sec:authorize="!isAuthenticated()" href="login.html" th:href="@{/login}" class="navbar-link">ログイン</a>&nbsp;&nbsp;
 						<a sec:authorize="hasRole('ROLE_USER')" href="item_list.html" th:href="@{/logout}" class="navbar-link">ログアウト</a>
-						
-						
 					</p>
 				</div>
 				<!-- /.navbar-collapse -->
@@ -90,9 +88,13 @@ $( function() {
 							<span style="text-align: center" th:each="pageNumber:${pageNumberList}">
 								<input type="hidden" name="page">
 							<button class="page-button" th:text="${pageNumber}" type="button" name="page" th:value="${pageNumber}"></button>
-						</span><br>
+						</span>&nbsp;&nbsp;
+						<select id="sort-select" name="sort">
+							<option value="0" th:field="*{sort}">- 並べ順選択 -</option>
+							<option value="1" th:field="*{sort}">価格の安い順</option>
+							<option value="2" th:field="*{sort}">価格の高い順</option>
+						</select>
 					</div><br>
-					
 					</form>
 				</div>
 			</div>
