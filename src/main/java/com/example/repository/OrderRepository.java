@@ -216,16 +216,32 @@ public class OrderRepository {
 	
 	
 	
+	
+	/**
+	 * その日の注文数を取得する.
+	 * 
+	 * @param orderDate 日付
+	 * @return その日の注文数
+	 */
+	public Integer countOrderOnTheDay(String orderDate) {
+		SqlParameterSource param = new MapSqlParameterSource();
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT count(*) FROM orders ");
+		sql.append("WHERE status <> 0 AND to_char(order_date,'yyyy-MM-dd') = '" + orderDate + "';");
+		return template.queryForObject(sql.toString(), param, Integer.class);
+	}
+
+	
 	/**
 	 *  注文番号用のシーケンスをリセットするためのメソッド
 	 *   setval('order_number_seq',1,false)が実行したい処理
 	 */
-//	private void resetSequence() {
-//		SqlParameterSource param = new MapSqlParameterSource();
-//		StringBuilder sql = new StringBuilder();
-//		sql.append("SELECT count(*), setval('order_number_seq',1,false) FROM orders");
-//		template.queryForObject(sql.toString(), param, Integer.class);
-//	}
+	public void resetSequence() {
+		SqlParameterSource param = new MapSqlParameterSource();
+		StringBuilder sql = new StringBuilder();
+		sql.append("INSERT INTO dummy (number) VALUES (setval('order_number_seq',1,false)); ");
+		template.update(sql.toString(), param);
+	}
 	
 	
 	/**

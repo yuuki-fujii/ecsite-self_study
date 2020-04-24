@@ -121,15 +121,19 @@ public class OrderController {
 		// 注文日を取得する
 		LocalDate now = LocalDate.now();
 		// 注文番号に日付をセットする（連番はシーケンスでSQL側でセット）
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		String date_for_order_number = now.format(formatter);
+		DateTimeFormatter formatterforOrderNumber = DateTimeFormatter.ofPattern("yyyyMMdd");
+		String date_for_order_number = now.format(formatterforOrderNumber);
 		order.setOrderNumber(date_for_order_number);
 		// 注文日も手動でセットする
 		Date orderDate = java.sql.Date.valueOf(now);	
 		order.setOrderDate(orderDate);
 		// 支払い状況に応じてstatusの値を更新する
 		order.setStatus(form.getPaymentMethod());
-		System.out.println(order);
+		// シーケンス判定
+		DateTimeFormatter formatterforSequence = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		String date_for_sequence_judge = now.format(formatterforSequence);
+		
+		orderService.resetSequence(date_for_sequence_judge);
 		orderService.updateOrder(order);
 		return "redirect:/order/to_finished";
 	}

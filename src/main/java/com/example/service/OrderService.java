@@ -22,6 +22,18 @@ public class OrderService {
 	
 	
 	/**
+	 * その日初めてのオーダーの場合、シーケンスをリセットする.
+	 * 
+	 * @param orderDate
+	 */
+	public void resetSequence(String orderDate) {
+		Integer count = orderRepository.countOrderOnTheDay(orderDate);
+		if (count == 0) { //　その日初めての注文の場合、シーケンスをリセットする
+			orderRepository.resetSequence();
+		}
+	}
+	
+	/**
 	 * Orderを更新する.
 	 * 
 	 * @param order orderオブジェクト

@@ -35,7 +35,7 @@ public class ShowItemDetailController {
 			for (Cookie cookie : cookies) {
 				if (!cookie.getName().equals("item")) { // Cookieにname="item"が1つもない時 = 初回
 					Cookie newCookie = new Cookie("item", item.getName());
-					newCookie.setMaxAge(60*60*24);
+					newCookie.setMaxAge(60*60*1);
 					newCookie.setPath("/"); // 有効なパスを指定しないとcookieを共有できない
 					response.addCookie(newCookie);
 				} else if (cookie.getName().equals("item")) {
