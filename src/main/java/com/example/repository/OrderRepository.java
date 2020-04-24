@@ -205,13 +205,27 @@ public class OrderRepository {
 	 */
 	public void updateOrder(Order order) {
 		SqlParameterSource param = new BeanPropertySqlParameterSource(order);
-		
-		String sql = "UPDATE orders SET status=:status, total_price=:totalPrice, order_date=:orderDate, "
-					+ "destination_name=:destinationName, destination_email=:destinationEmail, destination_zipcode=:destinationZipcode, "
-					+ "destination_address=:destinationAddress, destination_tel=:destinationTel,  delivery_time=:deliveryTime, payment_method=:paymentMethod "
-					+ "WHERE status = 0 AND user_id = :userId ";
-		template.update(sql, param);
+		StringBuilder sql = new StringBuilder();
+		sql.append("UPDATE orders SET status=:status, total_price=:totalPrice, order_date=:orderDate,");
+		sql.append("order_number = :orderNumber || to_char(nextval('order_number_seq'), 'FM0000'),");
+		sql.append("destination_name=:destinationName, destination_email=:destinationEmail, destination_zipcode=:destinationZipcode,");
+		sql.append("destination_address=:destinationAddress, destination_tel=:destinationTel,  delivery_time=:deliveryTime, payment_method=:paymentMethod ");
+		sql.append("WHERE status = 0 AND user_id = :userId;"); 
+		template.update(sql.toString(), param);
 	}
+	
+	
+	
+	/**
+	 *  注文番号用のシーケンスをリセットするためのメソッド
+	 *   setval('order_number_seq',1,false)が実行したい処理
+	 */
+//	private void resetSequence() {
+//		SqlParameterSource param = new MapSqlParameterSource();
+//		StringBuilder sql = new StringBuilder();
+//		sql.append("SELECT count(*), setval('order_number_seq',1,false) FROM orders");
+//		template.queryForObject(sql.toString(), param, Integer.class);
+//	}
 	
 	
 	/**

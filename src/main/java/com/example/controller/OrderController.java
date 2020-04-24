@@ -3,6 +3,7 @@ package com.example.controller;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
@@ -117,15 +118,19 @@ public class OrderController {
 		BeanUtils.copyProperties(form, order);
 		// deliveryTimeは手動でセットする
 		order.setDeliveryTime(deliveryTime);
-		// 注文日も手動でセットする
+		// 注文日を取得する
 		LocalDate now = LocalDate.now();
+		// 注文番号に日付をセットする（連番はシーケンスでSQL側でセット）
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+		String date_for_order_number = now.format(formatter);
+		order.setOrderNumber(date_for_order_number);
+		// 注文日も手動でセットする
 		Date orderDate = java.sql.Date.valueOf(now);	
 		order.setOrderDate(orderDate);
 		// 支払い状況に応じてstatusの値を更新する
 		order.setStatus(form.getPaymentMethod());
-		
+		System.out.println(order);
 		orderService.updateOrder(order);
-
 		return "redirect:/order/to_finished";
 	}
 	

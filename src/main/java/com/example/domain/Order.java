@@ -21,6 +21,8 @@ public class Order {
 	private Integer totalPrice;
 	/** 注文日 */
 	private Date orderDate;
+	/** 注文番号 */
+	private String orderNumber;
 	/** 宛先氏名 */
 	private String destinationName;
 	/** 宛先Eメール */
@@ -124,14 +126,23 @@ public class Order {
 	public void setOrderItemList(List<OrderItem> orderItemList) {
 		this.orderItemList = orderItemList;
 	}
-
+	
+	public String getOrderNumber() {
+		return orderNumber;
+	}
+	public void setOrderNumber(String orderNumber) {
+		this.orderNumber = orderNumber;
+	}
+	
+	
 	@Override
 	public String toString() {
 		return "Order [id=" + id + ", userId=" + userId + ", status=" + status + ", totalPrice=" + totalPrice
-				+ ", orderDate=" + orderDate + ", destinationName=" + destinationName + ", destinationEmail="
-				+ destinationEmail + ", destinationZipcode=" + destinationZipcode + ", destinationAddress="
-				+ destinationAddress + ", destinationTel=" + destinationTel + ", deliveryTime=" + deliveryTime
-				+ ", paymentMethod=" + paymentMethod + ", user=" + user + ", orderItemList=" + orderItemList + "]";
+				+ ", orderDate=" + orderDate + ", orderNumber=" + orderNumber + ", destinationName=" + destinationName
+				+ ", destinationEmail=" + destinationEmail + ", destinationZipcode=" + destinationZipcode
+				+ ", destinationAddress=" + destinationAddress + ", destinationTel=" + destinationTel
+				+ ", deliveryTime=" + deliveryTime + ", paymentMethod=" + paymentMethod + ", user=" + user
+				+ ", orderItemList=" + orderItemList + "]";
 	}
 	/**
 	 * 合計金額の税額を算出.
