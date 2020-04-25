@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.thymeleaf.util.StringUtils;
 
 import com.example.domain.Item;
 import com.example.form.SearchForm;
@@ -54,11 +55,9 @@ public class ShowItemListController {
 		}
 		
 		String [] itemHistory = itemName.split("/");
-		System.out.println(itemHistory.length);
-		if (itemHistory != null) {
+		if (!StringUtils.isEmpty(itemHistory[0])) {
 			List <String> itemHistroyArrayList = new ArrayList<>(Arrays.asList(itemHistory)); // 素材
 			Collections.reverse(itemHistroyArrayList);
-			
 			List <String> itemHistroyList = null;
 			if (itemHistroyArrayList.size() >= 6) {
 				itemHistroyList = new ArrayList<>();
@@ -71,8 +70,6 @@ public class ShowItemListController {
 			}
 			model.addAttribute("itemHistroyList", itemHistroyList);
 		}
-		
-
 		
 		
 		// オートコンプリート用の記述
