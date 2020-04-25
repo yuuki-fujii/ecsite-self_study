@@ -1,4 +1,4 @@
-	<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
 <meta charset="utf-8">
@@ -37,8 +37,7 @@
 						<span sec:authorize="hasRole('ROLE_USER')">
 							こんにちは、<span sec:authentication="principal.user.name"></span>さん !
 						</span>&nbsp;&nbsp;
-						<a href="cart_list.html" class="navbar-link" th:href="@{/show_cart_list}">ショッピングカート</a>&nbsp;&nbsp;
-						<span sec:authorize="hasRole('ROLE_USER')"><a href="order_history.html" th:href="@{/order_history}" class="navbar-link">注文履歴</a></span>&nbsp;&nbsp;
+						<a href="cart_list.html" class="navbar-link">ショッピングカート</a>&nbsp;&nbsp;
 						<a sec:authorize="!isAuthenticated()" href="login.html" th:href="@{/login}" class="navbar-link">ログイン</a>&nbsp;&nbsp;
 						<a sec:authorize="hasRole('ROLE_USER')" href="item_list.html" th:href="@{/logout}" class="navbar-link">ログアウト</a>
 					</p>
@@ -48,29 +47,63 @@
 			<!-- /.container-fluid -->
 		</nav>
 
-
 		<!-- table -->
 		<div class="row">
 			<div
-				class="table-responsive col-lg-offset-1 col-lg-10 col-md-offset-1 col-md-10 col-sm-10 col-xs-12">
-				<h3 class="text-center">決済が完了しました！</h3>
-				<div class="text-center">
-					<p>この度はご注文ありがとうございます。</p>
-					<p>お支払い先は、お送りしたメールに記載してありますのでご確認ください。</p>
-					<p>メールが届かない場合は「注文履歴」からご確認ください。</p>
-				</div>
-			</div>
-		</div>
-
-		<br><br>
-		<div class="row">
-			<div class="col-xs-offset-5 col-xs-2">
-				<div class="form-group">
-					<form action="order_finished.html" th:action="@{/}">
-						<input class="form-control btn btn-warning btn-block"
-							type="submit" value="トップ画面を表示する">
-					</form>
-				</div>
+				class="table-responsive col-lg-offset-1 col-lg-10 col-md-offset-1 col-md-10 col-sm-10 col-xs-12" th:unless="${noOrderItemMessage}">
+				<h3 class="text-center">注文履歴</h3>
+				<table class="table table-striped">
+					<tbody>
+						<tr>
+							<th>
+								<div class="text-center">
+									注文番号
+								</div>
+							</th>
+							<th>
+								<div class="text-center">
+									日付
+								</div>
+							</th>
+							<th>
+								<div class="text-center">
+									ステータス
+								</div>
+							</th>
+							<th>
+								<div class="text-center">
+									総計（税込）
+								</div>
+							</th>
+							<th>
+							</th>
+						</tr>
+						<tr th:each="orderHistory : ${orderHistoryList}">
+							<td>
+								<div class="text-center">
+									<span th:text="${orderHistory.orderNumber}">20200101000001</span>
+								</div>
+							</td>
+							<td>
+								<div class="text-center">
+									<span th:text="${orderHistory.orderDate}">2020/01/01</span>
+								</div>
+							</td>
+							<td>
+								<div class="text-center">
+									<span th:text="${orderHistory.stringStatus}">発送済</span>
+								</div>
+							</td>
+							<td>
+								<div class="text-center">
+									<span th:text="${#numbers.formatInteger(orderHistory.totalPrice,1,'COMMA')}" >◯,◯◯◯円</span>円
+									
+									
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
 			</div>
 		</div>
 	</div>

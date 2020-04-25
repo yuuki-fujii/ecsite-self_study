@@ -155,6 +155,21 @@ public class Order {
 	
 	
 	/**
+	 * ステータスを文字列で返す.
+	 * @return 文字列ステータス
+	 */
+	public String getStringStatus() {
+		String stringStatus = null;
+		if (status == 1) {
+			stringStatus = "未入金";
+		} else if (status == 2) {
+			stringStatus = "入金済";
+		}
+		return stringStatus;
+	}
+
+	
+	/**
 	 * 合計金額（税抜き）を算出.
 	 * @return　合計金額（税抜き）
 	 */

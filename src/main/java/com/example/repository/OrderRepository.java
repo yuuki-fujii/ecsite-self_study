@@ -8,6 +8,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -127,6 +128,20 @@ public class OrderRepository {
 	};
 	
 	
+	/**
+	 *  Orderオブジェクトを生成するRowMapper.
+	 */
+	private static final RowMapper<Order> ORDER_ROW_MAPPER = (rs, i) -> {
+		Order order = new Order();
+		order.setId(rs.getInt("id"));
+		order.setUserId(rs.getInt("user_id"));
+		order.setStatus(rs.getInt("status"));
+		order.setTotalPrice(rs.getInt("total_price"));
+		order.setOrderDate(rs.getDate("order_date"));
+		order.setOrderNumber(rs.getString("order_number"));
+		return order;
+	};
+	
 	
 	/**
 	 * 引数のユーザーIDとステータスで、注文情報を注文ID降順で取得する.
@@ -158,9 +173,29 @@ public class OrderRepository {
 		if (orderList.size() == 0) {
 			return null;
 		}
-
 		return orderList;
 	}
+	
+	
+	/**
+	 * 特定のユーザの注文済のorder情報を検索する.
+	 * 
+	 * @param userId ユーザid
+	 * @return 特定のユーザの注文済のorder情報
+	 */
+	public List<Order> findByUserId(Integer userId){
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT id, user_id, status, total_price, order_date, order_number ");
+		sql.append("FROM orders WHERE status <> 0 AND user_id = :userId ORDER BY order_date");
+		SqlParameterSource param = new MapSqlParameterSource().addValue("userId", userId);
+		List<Order> orderHistoryList = template.query(sql.toString(), param, ORDER_ROW_MAPPER);
+		
+		if (orderHistoryList.size() == 0) {
+			return null;
+		}
+		return orderHistoryList;
+	}
+	
 	
 	/**
 	 * 主キーを元にDBから削除.

@@ -34,8 +34,11 @@
 				<div class="collapse navbar-collapse"
 					id="bs-example-navbar-collapse-1">
 					<p class="navbar-text navbar-right">
+						<span sec:authorize="hasRole('ROLE_USER')">
+							こんにちは、<span sec:authentication="principal.user.name"></span>さん !
+						</span>&nbsp;&nbsp;
 						<!-- <a href="cart_list.html" class="navbar-link">ショッピングカート</a>&nbsp;&nbsp; -->
-						<a href="order_history.html" class="navbar-link">注文履歴</a>&nbsp;&nbsp;
+						<span sec:authorize="hasRole('ROLE_USER')"><a href="order_history.html" th:href="@{/order_history}" class="navbar-link">注文履歴</a></span>&nbsp;&nbsp;
 						<a sec:authorize="!isAuthenticated()" href="login.html" th:href="@{/login}" class="navbar-link">ログイン</a>&nbsp;&nbsp;
 						<a sec:authorize="hasRole('ROLE_USER')" href="item_list.html" th:href="@{/logout}" class="navbar-link">ログアウト</a>
 					</p>
