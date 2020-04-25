@@ -27,6 +27,7 @@ public class UserRepository {
 		user.setZipcode(rs.getString("zipcode"));
 		user.setAddress(rs.getString("address"));
 		user.setTelephone(rs.getString("telephone"));
+		user.setIsAdmin(rs.getBoolean("isadmin"));
 		return user;
 	};
 	
@@ -37,7 +38,7 @@ public class UserRepository {
 	 * @return ユーザー情報(該当なしの場合null)
 	 */
 	public User findByEmail(String email) {
-		String sql = "SELECT id, name, email, password, zipcode, address, telephone FROM users WHERE email=:email;";
+		String sql = "SELECT id, name, email, password, zipcode, address, telephone, isadmin FROM users WHERE email=:email;";
 		SqlParameterSource param = new MapSqlParameterSource().addValue("email", email);
 		// 該当データなしの場合、NullPointerException発生
 		try {
@@ -57,7 +58,7 @@ public class UserRepository {
 	public void insert(User user) {
 		SqlParameterSource param = new BeanPropertySqlParameterSource(user);
 		String sql = "INSERT INTO users (name, email, password, zipcode, address, telephone,isadmin)"
-				   + " VALUES (:name, :email, :password, :zipcode, :address, :telephone, false)";
+				   + " VALUES (:name, :email, :password, :zipcode, :address, :telephone, :isAdmin)";
 		template.update(sql, param);
 	}
 }

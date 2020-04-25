@@ -26,14 +26,6 @@ public class User {
 	/** trueなら管理者権限あり、falseなら権限なし */
 	private Boolean isAdmin;
 
-
-
-	@Override
-	public String toString() {
-		return "user [id=" + id + ", name=" + name + ", email=" + email + ", password=" + password + ", zipcode="
-				+ zipcode + ", address=" + address + ", telephone=" + telephone + "]";
-	}
-
 	public Integer getId() {
 		return id;
 	}
@@ -96,4 +88,11 @@ public class User {
 	public void setIsAdmin(Boolean isAdmin) {
 		this.isAdmin = isAdmin;
 	}
+
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", name=" + name + ", email=" + email + ", password=" + password + ", zipcode="
+				+ zipcode + ", address=" + address + ", telephone=" + telephone + ", isAdmin=" + isAdmin + "]";
+	}
+	
 }

@@ -64,6 +64,7 @@ public class OrderRepository {
 				order.setStatus(rs.getInt("status"));
 				order.setTotalPrice(rs.getInt("total_price"));
 				order.setOrderDate(rs.getDate("order_date"));
+				order.setOrderNumber(rs.getString("order_number"));
 				order.setDestinationName(rs.getString("destination_name"));
 				order.setDestinationEmail(rs.getString("destination_email"));
 				order.setDestinationZipcode(rs.getString("destination_zipcode"));
@@ -139,6 +140,7 @@ public class OrderRepository {
 		order.setTotalPrice(rs.getInt("total_price"));
 		order.setOrderDate(rs.getDate("order_date"));
 		order.setOrderNumber(rs.getString("order_number"));
+		order.setDestinationName(rs.getString("destination_name"));
 		return order;
 	};
 	
@@ -154,7 +156,7 @@ public class OrderRepository {
 		
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT o.id AS order_id, o.user_id, o.status, o.total_price, ");
-		sql.append("o.order_date, o.destination_name, o.destination_email,");
+		sql.append("o.order_date, o.order_number,o.destination_name, o.destination_email,");
 		sql.append("o.destination_zipcode, o.destination_address, o.destination_tel, o.delivery_time, o.payment_method, ");
 		sql.append("oi.id AS order_item_id, oi.item_id,oi.quantity, oi.size,");
 		sql.append("i.id AS item_id ,i.name AS item_name, i.price_m AS item_price_m, i.price_l AS item_price_l, i.image_path,");
@@ -175,6 +177,27 @@ public class OrderRepository {
 		}
 		return orderList;
 	}
+
+	
+	/**
+	 * 全ての注文済Orderを取得する（管理者用）.
+	 * 
+	 * @return 全ての注文済Order
+	 */
+	public List<Order> findAllOrder(){
+		
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT id, user_id, status, total_price, order_date, order_number, destination_name ");
+		sql.append("FROM orders WHERE status <> 0  ORDER BY order_date");
+		
+		List<Order> orderList = template.query(sql.toString(),ORDER_ROW_MAPPER);
+
+		if (orderList.size() == 0) {
+			return null;
+		}
+		return orderList;
+	}
+	
 	
 	
 	/**
@@ -185,7 +208,7 @@ public class OrderRepository {
 	 */
 	public List<Order> findByUserId(Integer userId){
 		StringBuilder sql = new StringBuilder();
-		sql.append("SELECT id, user_id, status, total_price, order_date, order_number ");
+		sql.append("SELECT id, user_id, status, total_price, order_date, order_number, destination_name ");
 		sql.append("FROM orders WHERE status <> 0 AND user_id = :userId ORDER BY order_date");
 		SqlParameterSource param = new MapSqlParameterSource().addValue("userId", userId);
 		List<Order> orderHistoryList = template.query(sql.toString(), param, ORDER_ROW_MAPPER);

@@ -32,8 +32,11 @@ public class UserDetailService implements UserDetailsService {
 		}
 		// 権限付与
 		Collection<GrantedAuthority> authorityList = new ArrayList<>();
-		authorityList.add(new SimpleGrantedAuthority("ROLE_USER"));
-		
+		if (user.getIsAdmin()) {
+			authorityList.add(new SimpleGrantedAuthority("ROLE_ADMIN")); // 管理者権限付与
+		} else if (!user.getIsAdmin()){
+			authorityList.add(new SimpleGrantedAuthority("ROLE_USER")); 
+		}
 		return new LoginUser(user, authorityList);
 	}
 }

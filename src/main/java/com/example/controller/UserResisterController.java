@@ -35,6 +35,10 @@ public class UserResisterController {
 		return "register_user";
 	}
 	
+	@RequestMapping("/admin")
+	public String toRegisterAdmin() {
+		return "register_admin";
+	}
 	
 	/**
 	 * ユーザ情報を登録する.
@@ -69,10 +73,15 @@ public class UserResisterController {
 		BeanUtils.copyProperties(form, user);
 		// ハッシュ化したパスワードをドメインにセット
 		user.setPassword(encode);
+		// 管理者権限の付与
+		if ("1".equals(form.getIsAdminNumber())) {
+			user.setIsAdmin(true);
+		}
 		userRegisterService.insert(user);
-		
 		return "redirect:/login";
 	}
+	
+	
 	
 	
 	

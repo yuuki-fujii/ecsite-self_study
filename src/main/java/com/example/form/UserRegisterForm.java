@@ -43,13 +43,11 @@ public class UserRegisterForm {
 	/** 確認用パスワード */
 	@NotBlank(message = "確認用パスワードを入力して下さい")
 	private String confirmationPassword;
-
-	@Override
-	public String toString() {
-		return "UserRegisterForm [name=" + name + ", email=" + email + ", zipcode=" + zipcode + ", address=" + address
-				+ ", telephone=" + telephone + ", password=" + password + ", confirmationPassword="
-				+ confirmationPassword + "]";
-	}
+	
+	/**  管理者権限 */
+	private boolean isAdmin;
+	/**  管理者権限（登録フォーム用） */
+	private String isAdminNumber;
 
 	public String getName() {
 		return name;
@@ -105,5 +103,29 @@ public class UserRegisterForm {
 
 	public void setConfirmationPassword(String confirmationPassword) {
 		this.confirmationPassword = confirmationPassword;
+	}
+
+	public boolean isAdmin() {
+		return isAdmin;
+	}
+
+	public void setAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
+	}
+	
+
+	public String getIsAdminNumber() {
+		return isAdminNumber;
+	}
+
+	public void setIsAdminNumber(String isAdminNumber) {
+		this.isAdminNumber = isAdminNumber;
+	}
+
+	@Override
+	public String toString() {
+		return "UserRegisterForm [name=" + name + ", email=" + email + ", zipcode=" + zipcode + ", address=" + address
+				+ ", telephone=" + telephone + ", password=" + password + ", confirmationPassword="
+				+ confirmationPassword + ", isAdmin=" + isAdmin + ", isAdminNumber=" + isAdminNumber + "]";
 	}
 }

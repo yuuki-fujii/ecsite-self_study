@@ -34,13 +34,24 @@
 				<div class="collapse navbar-collapse"
 					id="bs-example-navbar-collapse-1">
 					<p class="navbar-text navbar-right">
+						<!-- 管理者にのみ表示 -->
+						<span sec:authorize="hasRole('ROLE_ADMIN')">
+							こんにちは、管理者さん !&nbsp;&nbsp;
+						</span>
+						<!-- ユーザーに表示 -->
 						<span sec:authorize="hasRole('ROLE_USER')">
-							こんにちは、<span sec:authentication="principal.user.name"></span>さん !
-						</span>&nbsp;&nbsp;
+							こんにちは、<span sec:authentication="principal.user.name"></span>さん !&nbsp;&nbsp;
+						</span>
+						<!-- 非ログインユーザーに表示 -->
+						<span sec:authorize="!isAuthenticated()">
+							こんにちは、ゲストさん !&nbsp;&nbsp;
+						</span>
 						<a href="cart_list.html" class="navbar-link" th:href="@{/show_cart_list}">ショッピングカート</a>&nbsp;&nbsp;
-						<span sec:authorize="hasRole('ROLE_USER')"><a href="order_history.html" th:href="@{/order_history}" class="navbar-link">注文履歴</a></span>&nbsp;&nbsp;
-						<a sec:authorize="!isAuthenticated()" href="login.html" th:href="@{/login}" class="navbar-link">ログイン</a>&nbsp;&nbsp;
-						<a sec:authorize="hasRole('ROLE_USER')" href="item_list.html" th:href="@{/logout}" class="navbar-link">ログアウト</a>
+						<span sec:authorize="hasRole('ROLE_USER')"><a href="order_history.html" th:href="@{/order_history}" class="navbar-link">注文履歴</a>&nbsp;&nbsp;</span>
+						<span sec:authorize="hasRole('ROLE_ADMIN')"><a href="order_history.html" th:href="@{/admin_order_list}" class="navbar-link">注文一覧</a>&nbsp;&nbsp;</span>
+						<span sec:authorize="!isAuthenticated()"><a href="login.html" th:href="@{/login}" class="navbar-link">ログイン</a>&nbsp;&nbsp;</span>
+						<span sec:authorize="hasRole('ROLE_USER')"><a href="item_list.html" th:href="@{/logout}" class="navbar-link">ログアウト</a>&nbsp;&nbsp;</span>
+						<span sec:authorize="hasRole('ROLE_ADMIN')"><a href="item_list.html" th:href="@{/logout}" class="navbar-link">ログアウト</a>&nbsp;&nbsp;</span>
 					</p>
 				</div>
 				<!-- /.navbar-collapse -->
