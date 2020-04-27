@@ -1,24 +1,21 @@
 package com.example.controller;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.example.domain.Order;
-import com.example.helper.DownloadHelper;
 import com.example.service.AdminOrderListService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.dataformat.csv.CsvGenerator;
-import com.fasterxml.jackson.dataformat.csv.CsvMapper;
-import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
 
 /**
@@ -34,8 +31,6 @@ public class AdminOrderListController {
 	@Autowired
 	private AdminOrderListService adminOrderListService;
 	
-	@Autowired
-	private DownloadHelper downloadHelper;
 	
 	@RequestMapping("")
 	public String toOrderList(Model model) {
@@ -44,35 +39,36 @@ public class AdminOrderListController {
 		return "admin_order_list";
 	}
 	
-	/**
-     * csvをダウンロードする。
-     * @param response
-     * @return
-     * @throws IOException
-     */
-	@RequestMapping(value = "/download/csv", method = RequestMethod.GET)
-	public ResponseEntity<byte[]> download() throws IOException {
-		HttpHeaders headers = new HttpHeaders();
-        downloadHelper.addContentDisposition(headers, "ラクラクカリー.csv");
-        return new ResponseEntity<>(getCsvText().getBytes("MS932"), headers, HttpStatus.OK);
-	}
-	
-	
-	/**
-     * CsvMapperで、csvを作成する。
-     * @return csv(String)
-     * @throws JsonProcessingException
-     */
-	private String getCsvText() throws JsonProcessingException {
-		CsvMapper mapper = new CsvMapper();
-		//文字列にダブルクオートをつける
-		mapper.configure(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS, true);
-		//ヘッダをつける
-		CsvSchema schema = mapper.schemaFor(Order.class).withHeader();
-		// 商品情報をDBから取得
-		List<Order> orderList = adminOrderListService.getOrderListForAdmin();
+	@RequestMapping("/download_csv")
+	public void downloadCsv(HttpServletResponse response) {
+		String encodedFileName = null;
+		try {
+			encodedFileName = URLEncoder.encode("ラクラクカリー.csv", "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 		
-		return mapper.writer(schema).writeValueAsString(orderList);
+		response.setContentType(MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE + ";charset=utf-8");
+		response.setHeader("Content-Disposition", "attachment; filename=\"" + encodedFileName + "\"" );
+		
+		try (PrintWriter pw = response.getWriter()) {
+			List<Order> orderList = adminOrderListService.getOrderListForAdmin();
+			StringBuilder outputStringBuilder = new StringBuilder();
+			outputStringBuilder.append("注文番号,日付,利用者名,ステータス,総計（税込）\r\n");
+			
+			for (Order order : orderList) {
+				String orderNumber = order.getOrderNumber();
+				String Date = String.valueOf(order.getOrderDate());
+				String name = order.getDestinationName();
+				String status = String.valueOf(order.getStatus());
+				String totalPrice = String.valueOf(order.getTotalPrice());
+				// CSVファイル内部に記載する形式で文字列を設定
+				outputStringBuilder.append(orderNumber + "," + Date + "," + name + "," + status + "," + totalPrice + ",\r\n");
+			}
+			// CSVファイルに書き込み
+			pw.print(outputStringBuilder.toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
-	
 }
