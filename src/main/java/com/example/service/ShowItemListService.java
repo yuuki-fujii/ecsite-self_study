@@ -50,4 +50,14 @@ public class ShowItemListService {
 	public Integer count(SearchForm form) {
 		return itemRepository.count(form);
 	}
+	
+	
+	/**
+	 * 商品を追加する（バッジ処理練習用）.
+	 * 
+	 * @param item 商品情報
+	 */
+	public void insert(Item item) {
+		itemRepository.insert(item);
+	}
 }
