@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -85,6 +86,17 @@ public class OrderController {
 		// DB上ではtotal_priceは0なので、計算してセットする
 		order.setTotalPrice(order.getCalcTotalPrice() + order.getTax());
 		model.addAttribute("order", order);
+		
+		// クレジットカード情報入力欄の有効期限年リストを作成する
+		List<Integer> yearList = new ArrayList<>();
+		LocalDate date = LocalDate.now();
+		int topOfYear = date.getYear();
+		int endOfYear = topOfYear + 20;
+		for (int i = topOfYear; i <= endOfYear; i++) {
+			yearList.add(i);
+		}
+		model.addAttribute("yearList", yearList);
+		
 		
 		return "order_confirm";
 	}
