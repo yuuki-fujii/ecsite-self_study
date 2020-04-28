@@ -231,7 +231,7 @@
 											</div>
 											<div class="col-sm-5">
 												<input type="date" name="stringDeliveryDate" id="name"
-													class="form-control input-sm" />
+													class="form-control input-sm" th:field="*{stringDeliveryDate}" />
 											</div>
 
 										</div>
@@ -344,6 +344,9 @@
 				<div
 					class="table-responsive col-lg-offset-3 col-lg-6 col-md-offset-1 col-md-10 col-sm-10 col-xs-12">
 					<h3 class="text-center">カード情報</h3>
+					<div class="text-center">
+						<span th:text="${creditCard}" style="color:red"></span>
+					</div>
 					<table class="table table-striped">
 						<tbody>
 							<tr>

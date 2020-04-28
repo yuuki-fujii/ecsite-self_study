@@ -17,11 +17,14 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.thymeleaf.util.StringUtils;
 
+import com.example.domain.CheckedCreditCard;
 import com.example.domain.LoginUser;
 import com.example.domain.Order;
 import com.example.domain.User;
 import com.example.form.OrderForm;
+import com.example.service.CheckCreditCardService;
 import com.example.service.OrderService;
 import com.example.service.ShowCartListService;
 
@@ -40,6 +43,9 @@ public class OrderController {
 	
 	@Autowired
 	private ShowCartListService showCartListService;
+	
+	@Autowired
+	private CheckCreditCardService checkCreditCardService;
 	
 	@ModelAttribute
 	public OrderForm setUpOrderForm(@AuthenticationPrincipal LoginUser loginUser) {
@@ -103,19 +109,36 @@ public class OrderController {
 	
 	
 	@RequestMapping("/do_order")
-	public String doOrder(@AuthenticationPrincipal LoginUser loginUser,@Validated OrderForm form, BindingResult result, Model model) {
-		// 入力段階でエラーがある場合、注文確認画面を返す
-		if (result.hasErrors()) {
-			return toOrderConfirm(loginUser,model);
+	public String doOrder(@Validated OrderForm form, BindingResult result, Model model,@AuthenticationPrincipal LoginUser loginUser) {
+		
+		// クレジットカード情報を取得する
+		Integer paymentMethod = form.getPaymentMethod();
+		CheckedCreditCard checkedCard = new CheckedCreditCard();
+		if (paymentMethod == 2) {
+			checkedCard = checkCreditCardService.checkCardInfo(form);
+		}
+		System.out.println(checkedCard);
+		if ("error".equals(checkedCard.getStatus())) {
+			model.addAttribute("creditCard", "クレジットカード情報が不正です");
+		}
+		// notBlank効かないのでコントローラで実装
+		if (form.getStringDeliveryDate() == null) {
+			result.rejectValue("stringDeliveryDate", null, "配達日を入力して下さい");
 		}
 		
 		// 配達希望時刻を取得
 		LocalDateTime localDeliveryTime = form.getDeliveryTime();
 		//　現在時刻を取得
 		LocalDateTime nowPlus2hour = LocalDateTime.now().plusHours(2);
+		
 		//　もし過去の時刻が選択されたらエラーを返す
 		if (nowPlus2hour.isAfter(localDeliveryTime)) {
 			result.rejectValue("stringDeliveryDate",  null, "配達希望日時は現在時刻の2時間以上後を選択して下さい");
+		}
+		
+		// 1つでもエラーがある場合、注文確認画面を返す
+		if (result.hasErrors() || "error".equals(checkedCard.getStatus())) {
+			return toOrderConfirm(loginUser,model);
 		}
 		
 		// TimestampクラスのvalueOfメソッドを使って変換しておく
@@ -145,8 +168,8 @@ public class OrderController {
 		DateTimeFormatter formatterforSequence = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		String date_for_sequence_judge = now.format(formatterforSequence);
 		
-		orderService.resetSequence(date_for_sequence_judge);
-		orderService.updateOrder(order);
+//		orderService.resetSequence(date_for_sequence_judge);
+//		orderService.updateOrder(order);
 		return "redirect:/order/to_finished";
 	}
 	

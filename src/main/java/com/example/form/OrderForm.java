@@ -35,7 +35,6 @@ public class OrderForm {
 	@Pattern(regexp = "^[0-9]+$", message = "電話番号は数値を入力して下さい")
 	private String destinationTel;
 	/** 配達日 */
-	@NotBlank(message = "配達日を入力して下さい")
 	private String stringDeliveryDate;
 	/** 配達時間 */
 	private String stringDeliveryHour;
