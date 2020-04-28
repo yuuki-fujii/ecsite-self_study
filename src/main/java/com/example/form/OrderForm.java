@@ -1,7 +1,5 @@
 package com.example.form;
 
-import java.time.LocalDateTime;
-
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
@@ -38,8 +36,6 @@ public class OrderForm {
 	private String stringDeliveryDate;
 	/** 配達時間 */
 	private String stringDeliveryHour;
-	/** 配達時間 */ 
-	private LocalDateTime deliveryTime;
 	/** 支払方法 */
 	private Integer paymentMethod;
 	/** カード番号 */
@@ -137,39 +133,21 @@ public class OrderForm {
 	public void setCard_cvv(String card_cvv) {
 		this.card_cvv = card_cvv;
 	}
-	// フォーム側でdelivaryTimeを加工する
-	public LocalDateTime getDeliveryTime() {
-		try {
-			// stringDeliveryDate と stringDeliveryHourを用いてLocalDateTimeオブジェクトを作成する
-			int year = Integer.parseInt(stringDeliveryDate.substring(0, 4));
-			int month = Integer.parseInt(stringDeliveryDate.substring(5, 7));
-			int date = Integer.parseInt(stringDeliveryDate.substring(8, 10));
-			int hour = Integer.parseInt(stringDeliveryHour);
-			LocalDateTime deliveryTime = LocalDateTime.of(year, month, date, hour, 0, 0);
-			
-			return deliveryTime;
-		} catch (Exception e) {
-			return null;
-		}
-	}
-	public void setDeliveryTime(LocalDateTime deliveryTime) {
-		this.deliveryTime = deliveryTime;
-	}
 	public Integer getPaymentMethod() {
 		return paymentMethod;
 	}
 	public void setPaymentMethod(Integer paymentMethod) {
 		this.paymentMethod = paymentMethod;
 	}
-	
 	@Override
 	public String toString() {
 		return "OrderForm [id=" + id + ", totalPrice=" + totalPrice + ", destinationName=" + destinationName
 				+ ", destinationEmail=" + destinationEmail + ", destinationZipcode=" + destinationZipcode
 				+ ", destinationAddress=" + destinationAddress + ", destinationTel=" + destinationTel
 				+ ", stringDeliveryDate=" + stringDeliveryDate + ", stringDeliveryHour=" + stringDeliveryHour
-				+ ", deliveryTime=" + deliveryTime + ", paymentMethod=" + paymentMethod + ", card_number=" + card_number
-				+ ", card_exp_year=" + card_exp_year + ", card_exp_month=" + card_exp_month + ", card_name=" + card_name
-				+ ", card_cvv=" + card_cvv + "]";
+				+ ", paymentMethod=" + paymentMethod + ", card_number=" + card_number + ", card_exp_year="
+				+ card_exp_year + ", card_exp_month=" + card_exp_month + ", card_name=" + card_name + ", card_cvv="
+				+ card_cvv + "]";
 	}
+	
 }

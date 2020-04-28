@@ -24,7 +24,6 @@ import com.example.domain.LoginUser;
 import com.example.domain.Order;
 import com.example.domain.User;
 import com.example.form.OrderForm;
-import com.example.service.CheckCreditCardService;
 import com.example.service.OrderService;
 import com.example.service.ShowCartListService;
 
@@ -44,8 +43,8 @@ public class OrderController {
 	@Autowired
 	private ShowCartListService showCartListService;
 	
-	@Autowired
-	private CheckCreditCardService checkCreditCardService;
+//	@Autowired
+//	private CheckCreditCardService checkCreditCardService;
 	
 	@ModelAttribute
 	public OrderForm setUpOrderForm(@AuthenticationPrincipal LoginUser loginUser) {
@@ -114,20 +113,27 @@ public class OrderController {
 		// クレジットカード情報を取得する
 		Integer paymentMethod = form.getPaymentMethod();
 		CheckedCreditCard checkedCard = new CheckedCreditCard();
-		if (paymentMethod == 2) {
-			checkedCard = checkCreditCardService.checkCardInfo(form);
-		}
-		System.out.println(checkedCard);
-		if ("error".equals(checkedCard.getStatus())) {
-			model.addAttribute("creditCard", "クレジットカード情報が不正です");
-		}
-		// notBlank効かないのでコントローラで実装
-		if (form.getStringDeliveryDate() == null) {
+//		if (paymentMethod == 2) {
+//			checkedCard = checkCreditCardService.checkCardInfo(form);
+//		}
+//		if ("error".equals(checkedCard.getStatus())) {
+//			model.addAttribute("creditCard", "クレジットカード情報が不正です");
+//		}
+		
+//		// notBlank効かないのでコントローラで実装
+		if (StringUtils.isEmpty(form.getStringDeliveryDate()) ) {
 			result.rejectValue("stringDeliveryDate", null, "配達日を入力して下さい");
+			return toOrderConfirm(loginUser,model);
 		}
 		
 		// 配達希望時刻を取得
-		LocalDateTime localDeliveryTime = form.getDeliveryTime();
+		// stringDeliveryDate と stringDeliveryHourを用いてLocalDateTimeオブジェクトを作成する
+		int year = Integer.parseInt(form.getStringDeliveryDate().substring(0, 4));
+		int month = Integer.parseInt(form.getStringDeliveryDate().substring(5, 7));
+		int date = Integer.parseInt(form.getStringDeliveryDate().substring(8, 10));
+		int hour = Integer.parseInt(form.getStringDeliveryHour());
+		LocalDateTime localDeliveryTime = LocalDateTime.of(year, month, date, hour, 0, 0);
+		
 		//　現在時刻を取得
 		LocalDateTime nowPlus2hour = LocalDateTime.now().plusHours(2);
 		
@@ -168,8 +174,8 @@ public class OrderController {
 		DateTimeFormatter formatterforSequence = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		String date_for_sequence_judge = now.format(formatterforSequence);
 		
-//		orderService.resetSequence(date_for_sequence_judge);
-//		orderService.updateOrder(order);
+		orderService.resetSequence(date_for_sequence_judge);
+		orderService.updateOrder(order);
 		return "redirect:/order/to_finished";
 	}
 	
